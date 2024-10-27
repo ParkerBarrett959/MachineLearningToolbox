@@ -2,7 +2,15 @@
 
 // Default constructor
 LinearRegression::LinearRegression()
-    : numPredictorWeights_(2), numMeasurements_(0) {}
+    : numPredictorWeights_(2), numMeasurements_(0) {
+  predictorWeights_.conservativeResize(numPredictorWeights_);
+}
+
+// Constructor for case with n parameters
+LinearRegression::LinearRegression(const int nParams)
+    : numPredictorWeights_(nParams), numMeasurements_(0) {
+  predictorWeights_.conservativeResize(numPredictorWeights_);
+}
 
 // Add a sample to the linear regression
 bool LinearRegression::addSample(const Eigen::VectorXd &xObs,
@@ -26,4 +34,17 @@ bool LinearRegression::addSample(const Eigen::VectorXd &xObs,
   Y_.conservativeResize(numMeasurements_, 1);
   Y_(numMeasurements_ - 1) = yObs;
   return true;
+}
+
+// Solve Regression
+bool LinearRegression::solveRegression() {
+  // Check for to few measurments - underdetermined system
+  if (numMeasurements_ < numPredictorWeights_) {
+    return false;
+  }
+
+  // Solve and set the predictor weights
+  predictorWeights_ = (A_.transpose() * A_).ldlt().solve(A_.transpose() * Y_);
+  regressionSolved_ = true;
+  return regressionSolved_;
 }
