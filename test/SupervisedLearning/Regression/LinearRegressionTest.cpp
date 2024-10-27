@@ -10,7 +10,10 @@
 
 // Constructor: Default
 TEST(LinearRegressionConstructor, Default) {
-  // Create LinearRegression Objects
+  // Create LinearRegression 1D Objects
   LinearRegression lr;
-  EXPECT_EQ(1, 1);
+
+  // Verify 1D model size
+  EXPECT_EQ(lr.getSystemDimension(), 1);
+  EXPECT_EQ(lr.getNumberPredictorWeights(), 2);
 }
