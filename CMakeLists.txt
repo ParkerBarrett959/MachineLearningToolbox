@@ -8,13 +8,29 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Find Eigen
 find_package(Eigen3 REQUIRED)
 
+# Find Google Test
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+
 # Specify the include directories
 include_directories(include ${EIGEN3_INCLUDE_DIRS})
 
 # Create the static library from the source files
-add_library(MyLibrary STATIC src/class.cpp)
+add_library(Mlt STATIC src/SupervisedLearning/Regression/LinearRegression.cpp)
 
-# Optionally, you can specify the output directory for the library
-set_target_properties(MyLibrary PROPERTIES
+# Set lib output directory
+set_target_properties(Mlt PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
+
+# Add the test executable and link
+add_executable(MltTest test/testMain.cpp test/SupervisedLearning/Regression/LinearRegressionTest.cpp)
+target_link_libraries(MltTest Mlt ${GTEST_LIBRARIES})
+
+# Set test binary output directory
+set_target_properties(MltTest PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
+
+# Enable Testing
+enable_testing()
