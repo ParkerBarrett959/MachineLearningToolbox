@@ -1,4 +1,4 @@
-![image](https://github.com/ParkerBarrett959/MachineLearningToolbox/blob/linear-regression/doc/MLTLogo.PNG)
+![image](https://github.com/ParkerBarrett959/MachineLearningToolbox/blob/main/doc/MLTLogo.PNG)
 # Machine Learning Toolbox
 A C++ library for building, testing and learning machine learning models and algorithms. Each algorithm's individual directory contains examples of how to use it. Detailed algorithm write-ups can be found here: https://www.numericalprogrammingwithparker.com/.
 
