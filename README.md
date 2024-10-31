@@ -2,7 +2,7 @@
 # Machine Learning Toolbox
 A C++ library for building, testing and learning machine learning models and algorithms. Each algorithm's individual directory contains examples of how to use it. Detailed algorithm write-ups can be found here: https://www.numericalprogrammingwithparker.com/.
 
-[![AutomatedTests Actions Status](https://github.com/ParkerBarrett959/NavFuse/workflows/NavFuse-master/badge.svg)](https://github.com/ParkerBarrett959/NavFuse/actions)
+[![AutomatedTests Actions Status](https://github.com/ParkerBarrett959/MachineLearningToolbox/workflows/MachineLearningToolbox-master/badge.svg)](https://github.com/ParkerBarrett959/MachineLearningToolbox/actions)
 
 # Dependencies
 * C++ 17 (or greater) <br />
