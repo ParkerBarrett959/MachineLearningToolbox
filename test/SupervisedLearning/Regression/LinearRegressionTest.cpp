@@ -50,8 +50,8 @@ TEST(LinearRegression, AddTrainingData) {
   EXPECT_EQ(lr.getNumberMeasurements(), 1);
 }
 
-// Add solve regression
-TEST(LinearRegression, Solve1) {
+// Add solve regression and predict
+TEST(LinearRegression, SolveAndPredict1) {
   // Create LinearRegression bject
   LinearRegression lr;
 
@@ -71,6 +71,17 @@ TEST(LinearRegression, Solve1) {
   Eigen::VectorXd weights = lr.getPredictorWeights();
   EXPECT_EQ(weights(0), 0.0);
   EXPECT_EQ(weights(1), 1.0);
+
+  // Make single value predictions
+  Eigen::Vector<double, 1> predictor;
+  predictor << 2.0;
+  auto result = lr.predict(predictor);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), 2.0);
+  predictor(0) = -2.0;
+  result = lr.predict(predictor);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), -2.0);
 }
 
 // Add solve regression
@@ -96,4 +107,16 @@ TEST(LinearRegression, Solve2) {
   EXPECT_NEAR(weights(0), 150.166, 1e-3);
   EXPECT_NEAR(weights(1), -2.731, 1e-3);
   EXPECT_NEAR(weights(2), 0.581, 1e-3);
+
+  // Make single prediction value
+  Eigen::Vector<double, 2> predictor;
+  predictor << 2.0, 20.0;
+  auto result = lr.predict(predictor);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_NEAR(result.value(), 156.323, 1e-3);
+  predictor(0) = -2.0;
+  predictor(1) = -20.0;
+  result = lr.predict(predictor);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_NEAR(result.value(), 144.009, 1e-3);
 }

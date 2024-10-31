@@ -47,3 +47,20 @@ bool LinearRegression::solveRegression() {
   regressionSolved_ = true;
   return regressionSolved_;
 }
+
+// Make single prediction
+std::optional<double>
+LinearRegression::predict(const Eigen::VectorXd &predictors) {
+  // Check for correct predictors size
+  if (predictors.size() != numPredictorWeights_ - 1) {
+    return {};
+  }
+
+  // Update the predictor vector to have a leading 1
+  Eigen::VectorXd predictorsNew(predictors.size() + 1);
+  predictorsNew(0) = 1.0;
+  predictorsNew.segment(1, predictors.size()) = predictors;
+
+  // Compute prediction
+  return predictorWeights_.dot(predictorsNew);
+}

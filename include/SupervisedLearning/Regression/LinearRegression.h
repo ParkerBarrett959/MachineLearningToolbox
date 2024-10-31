@@ -3,12 +3,21 @@
 
 #include <Eigen/Dense>
 #include <iostream>
+#include <optional>
 
+/**
+ * Linear Regression.
+ *
+ * @brief: This class is for solving linear regression models of the form:
+ * Y = b0 + b1*X1 + b2*X2 + ... + bn*Xn. Note that each term in the summation is
+ * linear, meaning this class supports both simple and multiple linear
+ * regressions.
+ */
 class LinearRegression {
 public:
   /**
    * Default c'tor
-   * Note: The default is a simple 1D linear regression of the form: Y = b0 +
+   * Note: The default is a simple linear regression of the form: Y = b0 +
    * b1*X
    */
   LinearRegression();
@@ -58,6 +67,16 @@ public:
    * @return True if the regression solved successfully, false otherwise.
    */
   bool solveRegression();
+
+  /**
+   * Make a single prediction given the input values
+   *
+   * @param predictors The vector of predictors. There should be
+   * numPredictorWeights_-1 predictors.
+   * @return std::optional prediction value. If the prediction failed, the
+   * optional will remain unset.
+   */
+  std::optional<double> predict(const Eigen::VectorXd &predictors);
 
 private:
   // Number of predictor weights, bo, b1, ..., bn
