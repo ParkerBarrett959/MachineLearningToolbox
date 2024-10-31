@@ -78,6 +78,18 @@ public:
    */
   std::optional<double> predict(const Eigen::VectorXd &predictors);
 
+  /**
+   * Make a batch of predictions given the input values
+   *
+   * @param predictors The matrix of predictors. Each row corresponds to one
+   * prediction. There number of columns should be numPredictorWeights_-1
+   * predictors.
+   * @return std::optional prediction values. If the prediction failed, the
+   * optional will remain unset.
+   */
+  std::optional<Eigen::VectorXd>
+  predictBatch(const Eigen::MatrixXd &predictors);
+
 private:
   // Number of predictor weights, bo, b1, ..., bn
   const int numPredictorWeights_;

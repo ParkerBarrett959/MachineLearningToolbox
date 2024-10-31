@@ -82,6 +82,15 @@ TEST(LinearRegression, SolveAndPredict1) {
   result = lr.predict(predictor);
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), -2.0);
+
+  // Make batch prediction
+  Eigen::Matrix<double, 2, 1> predictors;
+  predictors << 2.0, -2.0;
+  auto resultBatch = lr.predictBatch(predictors);
+  EXPECT_TRUE(resultBatch.has_value());
+  Eigen::VectorXd batchResult = resultBatch.value();
+  EXPECT_EQ(batchResult(0), 2.0);
+  EXPECT_EQ(batchResult(1), -2.0);
 }
 
 // Add solve regression
@@ -119,4 +128,13 @@ TEST(LinearRegression, Solve2) {
   result = lr.predict(predictor);
   EXPECT_TRUE(result.has_value());
   EXPECT_NEAR(result.value(), 144.009, 1e-3);
+
+  // Make batch prediction
+  Eigen::Matrix<double, 2, 2> predictors;
+  predictors << 2.0, 20.0, -2.0, -20.0;
+  auto resultBatch = lr.predictBatch(predictors);
+  EXPECT_TRUE(resultBatch.has_value());
+  Eigen::VectorXd batchResult = resultBatch.value();
+  EXPECT_NEAR(batchResult(0), 156.323, 1e-3);
+  EXPECT_NEAR(batchResult(1), 144.009, 1e-3);
 }

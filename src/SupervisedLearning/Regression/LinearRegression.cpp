@@ -56,6 +56,11 @@ LinearRegression::predict(const Eigen::VectorXd &predictors) {
     return {};
   }
 
+  // Check that the regression has been solved
+  if (!regressionSolved()) {
+    return {};
+  }
+
   // Update the predictor vector to have a leading 1
   Eigen::VectorXd predictorsNew(predictors.size() + 1);
   predictorsNew(0) = 1.0;
@@ -63,4 +68,31 @@ LinearRegression::predict(const Eigen::VectorXd &predictors) {
 
   // Compute prediction
   return predictorWeights_.dot(predictorsNew);
+}
+
+// Make batch of predictions
+std::optional<Eigen::VectorXd>
+LinearRegression::predictBatch(const Eigen::MatrixXd &predictors) {
+  // Check for correct predictors size
+  if (predictors.cols() != numPredictorWeights_ - 1) {
+    return {};
+  }
+
+  // Check that the regression has been solved
+  if (!regressionSolved()) {
+    return {};
+  }
+
+  // Loop over each row and compute a prediction
+  Eigen::VectorXd predictions(predictors.rows());
+  for (int i = 0; i < predictors.rows(); i++) {
+    Eigen::VectorXd rowCurr = predictors.row(i);
+    auto maybePrediction = predict(rowCurr);
+    if (!maybePrediction.has_value()) {
+      return {};
+    } else {
+      predictions(i) = maybePrediction.value();
+    }
+  }
+  return predictions;
 }
