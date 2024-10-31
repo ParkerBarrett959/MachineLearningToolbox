@@ -3,12 +3,21 @@
 
 #include <Eigen/Dense>
 #include <iostream>
+#include <optional>
 
+/**
+ * Linear Regression.
+ *
+ * @brief: This class is for solving linear regression models of the form:
+ * Y = b0 + b1*X1 + b2*X2 + ... + bn*Xn. Note that each term in the summation is
+ * linear, meaning this class supports both simple and multiple linear
+ * regressions.
+ */
 class LinearRegression {
 public:
   /**
    * Default c'tor
-   * Note: The default is a simple 1D linear regression of the form: Y = b0 +
+   * Note: The default is a simple linear regression of the form: Y = b0 +
    * b1*X
    */
   LinearRegression();
@@ -40,19 +49,17 @@ public:
   Eigen::VectorXd getPredictorWeights() const { return predictorWeights_; }
 
   /**
-   * Add a sample to the regression problem. Note: This fucntion resizes the
-   * underlying measurement matrix on each call, consider adding large
-   * quantities of measurements in a batch operation instead for performance.
+   * Add training data to the regression problem.
    *
-   * @param xObs: The input of the independent variables (predictors) as a
-   * vector, [x1, x2, ..., xn]. This vector should have one less element than
-   * the number of predictor weights. The leading "1" in the solve is
-   * automatically added
-   * @param yObs The output of the observation, given a scalar value.
+   * @param data: The input of the independent variables (predictors) as a 2D
+   * Eigen matrix, where each row corresponds to a set of predictors and
+   * observation, [x1, x2, ..., xn, y]. Each row should have the same number of
+   * elements as the number of predictor weights. The last element in the row is
+   * the observation value.
    *
    * @return True if the observation was added to the system, false otherwise.
    */
-  bool addSample(const Eigen::VectorXd &xObs, const double yObs);
+  bool addTrainingData(const Eigen::MatrixXd &data);
 
   /**
    * Solve regression
@@ -60,6 +67,28 @@ public:
    * @return True if the regression solved successfully, false otherwise.
    */
   bool solveRegression();
+
+  /**
+   * Make a single prediction given the input values
+   *
+   * @param predictors The vector of predictors. There should be
+   * numPredictorWeights_-1 predictors.
+   * @return std::optional prediction value. If the prediction failed, the
+   * optional will remain unset.
+   */
+  std::optional<double> predict(const Eigen::VectorXd &predictors);
+
+  /**
+   * Make a batch of predictions given the input values
+   *
+   * @param predictors The matrix of predictors. Each row corresponds to one
+   * prediction. There number of columns should be numPredictorWeights_-1
+   * predictors.
+   * @return std::optional prediction values. If the prediction failed, the
+   * optional will remain unset.
+   */
+  std::optional<Eigen::VectorXd>
+  predictBatch(const Eigen::MatrixXd &predictors);
 
 private:
   // Number of predictor weights, bo, b1, ..., bn

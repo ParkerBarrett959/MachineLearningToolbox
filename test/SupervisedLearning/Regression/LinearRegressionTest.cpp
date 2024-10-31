@@ -28,8 +28,8 @@ TEST(LinearRegression, ParamNumConstructor) {
   EXPECT_EQ(lr.getNumberMeasurements(), 0);
 }
 
-// Add measurements
-TEST(LinearRegression, AddMeasurment) {
+// Add training data
+TEST(LinearRegression, AddTrainingData) {
   // Create LinearRegression simple Objects
   LinearRegression lr;
 
@@ -38,21 +38,20 @@ TEST(LinearRegression, AddMeasurment) {
   EXPECT_EQ(lr.getNumberMeasurements(), 0);
 
   // Add a bad measurement
-  Eigen::Matrix<double, 1, 2> measBad;
-  measBad << 1.0, 2.0;
-  double y = 3.0;
-  EXPECT_FALSE(lr.addSample(measBad, y));
+  Eigen::Matrix<double, 1, 3> measBad;
+  measBad << 1.0, 2.0, 3.0;
+  EXPECT_FALSE(lr.addTrainingData(measBad));
   EXPECT_EQ(lr.getNumberMeasurements(), 0);
 
   // Add a valid measurmeent
-  Eigen::Matrix<double, 1, 1> measGood;
-  measGood << 1.0;
-  EXPECT_TRUE(lr.addSample(measGood, y));
+  Eigen::Matrix<double, 1, 2> measGood;
+  measGood << 1.0, 2.0;
+  EXPECT_TRUE(lr.addTrainingData(measGood));
   EXPECT_EQ(lr.getNumberMeasurements(), 1);
 }
 
-// Add solve regression
-TEST(LinearRegression, Solve1) {
+// Add solve regression and predict
+TEST(LinearRegression, SolveAndPredict1) {
   // Create LinearRegression bject
   LinearRegression lr;
 
@@ -61,20 +60,37 @@ TEST(LinearRegression, Solve1) {
   EXPECT_EQ(lr.getNumberMeasurements(), 0);
 
   // Add measurements to model 1
-  double y = 1.0;
-  Eigen::Matrix<double, 1, 1> meas;
-  meas << 1.0;
-  EXPECT_TRUE(lr.addSample(meas, y));
+  Eigen::Matrix<double, 2, 2> meas;
+  meas << 1.0, 1.0, -1.0, -1.0;
+  EXPECT_TRUE(lr.addTrainingData(meas.row(0)));
   EXPECT_FALSE(lr.solveRegression());
-  meas(0) = -1.0;
-  y = -1.0;
-  EXPECT_TRUE(lr.addSample(meas, y));
+  EXPECT_TRUE(lr.addTrainingData(meas));
   EXPECT_FALSE(lr.regressionSolved());
   EXPECT_TRUE(lr.solveRegression());
   EXPECT_TRUE(lr.regressionSolved());
   Eigen::VectorXd weights = lr.getPredictorWeights();
   EXPECT_EQ(weights(0), 0.0);
   EXPECT_EQ(weights(1), 1.0);
+
+  // Make single value predictions
+  Eigen::Vector<double, 1> predictor;
+  predictor << 2.0;
+  auto result = lr.predict(predictor);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), 2.0);
+  predictor(0) = -2.0;
+  result = lr.predict(predictor);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), -2.0);
+
+  // Make batch prediction
+  Eigen::Matrix<double, 2, 1> predictors;
+  predictors << 2.0, -2.0;
+  auto resultBatch = lr.predictBatch(predictors);
+  EXPECT_TRUE(resultBatch.has_value());
+  Eigen::VectorXd batchResult = resultBatch.value();
+  EXPECT_EQ(batchResult(0), 2.0);
+  EXPECT_EQ(batchResult(1), -2.0);
 }
 
 // Add solve regression
@@ -87,25 +103,10 @@ TEST(LinearRegression, Solve2) {
   EXPECT_EQ(lr.getNumberMeasurements(), 0);
 
   // Add measurements to model
-  double y = 144.0;
-  Eigen::Matrix<double, 1, 2> meas;
-  meas << 18.0, 52.0;
-  EXPECT_TRUE(lr.addSample(meas, y));
-  y = 142.0;
-  meas << 24.0, 40.0;
-  EXPECT_TRUE(lr.addSample(meas, y));
-  y = 124.0;
-  meas << 12.0, 40.0;
-  EXPECT_TRUE(lr.addSample(meas, y));
-  y = 64.0;
-  meas << 30.0, 48.0;
-  EXPECT_TRUE(lr.addSample(meas, y));
-  y = 96.0;
-  meas << 30.0, 32.0;
-  EXPECT_TRUE(lr.addSample(meas, y));
-  y = 92.0;
-  meas << 22.0, 16.0;
-  EXPECT_TRUE(lr.addSample(meas, y));
+  Eigen::Matrix<double, 6, 3> meas;
+  meas << 18.0, 52.0, 144.0, 24.0, 40.0, 142.0, 12.0, 40.0, 124.0, 30.0, 48.0,
+      64.0, 30.0, 32.0, 96.0, 22.0, 16.0, 92.0;
+  EXPECT_TRUE(lr.addTrainingData(meas));
 
   // Solve Regression
   EXPECT_FALSE(lr.regressionSolved());
@@ -115,4 +116,25 @@ TEST(LinearRegression, Solve2) {
   EXPECT_NEAR(weights(0), 150.166, 1e-3);
   EXPECT_NEAR(weights(1), -2.731, 1e-3);
   EXPECT_NEAR(weights(2), 0.581, 1e-3);
+
+  // Make single prediction value
+  Eigen::Vector<double, 2> predictor;
+  predictor << 2.0, 20.0;
+  auto result = lr.predict(predictor);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_NEAR(result.value(), 156.323, 1e-3);
+  predictor(0) = -2.0;
+  predictor(1) = -20.0;
+  result = lr.predict(predictor);
+  EXPECT_TRUE(result.has_value());
+  EXPECT_NEAR(result.value(), 144.009, 1e-3);
+
+  // Make batch prediction
+  Eigen::Matrix<double, 2, 2> predictors;
+  predictors << 2.0, 20.0, -2.0, -20.0;
+  auto resultBatch = lr.predictBatch(predictors);
+  EXPECT_TRUE(resultBatch.has_value());
+  Eigen::VectorXd batchResult = resultBatch.value();
+  EXPECT_NEAR(batchResult(0), 156.323, 1e-3);
+  EXPECT_NEAR(batchResult(1), 144.009, 1e-3);
 }
