@@ -40,19 +40,17 @@ public:
   Eigen::VectorXd getPredictorWeights() const { return predictorWeights_; }
 
   /**
-   * Add a sample to the regression problem. Note: This fucntion resizes the
-   * underlying measurement matrix on each call, consider adding large
-   * quantities of measurements in a batch operation instead for performance.
+   * Add training data to the regression problem.
    *
-   * @param xObs: The input of the independent variables (predictors) as a
-   * vector, [x1, x2, ..., xn]. This vector should have one less element than
-   * the number of predictor weights. The leading "1" in the solve is
-   * automatically added
-   * @param yObs The output of the observation, given a scalar value.
+   * @param data: The input of the independent variables (predictors) as a 2D
+   * Eigen matrix, where each row corresponds to a set of predictors and
+   * observation, [x1, x2, ..., xn, y]. Each row should have the same number of
+   * elements as the number of predictor weights. The last element in the row is
+   * the observation value.
    *
    * @return True if the observation was added to the system, false otherwise.
    */
-  bool addSample(const Eigen::VectorXd &xObs, const double yObs);
+  bool addTrainingData(const Eigen::MatrixXd &data);
 
   /**
    * Solve regression
