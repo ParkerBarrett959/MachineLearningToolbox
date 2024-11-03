@@ -34,3 +34,12 @@ set_target_properties(MltTest PROPERTIES
 
 # Enable Testing
 enable_testing()
+
+# Optional Example Builds
+option(BUILD_LINEAR_REGRESSION "Build Linear Regression Example" OFF)
+
+# Optional Builds
+if (BUILD_LINEAR_REGRESSION)
+    add_executable(LinearRegressionExample examples/SupervisedLearning/Regression/LinearRegression.cpp)
+    target_link_libraries(LinearRegressionExample Mlt)
+endif()
