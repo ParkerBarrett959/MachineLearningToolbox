@@ -20,3 +20,23 @@ make
 ```
 ./MltTest
 ```
+
+# Run Examples
+
+This library contains examples for all the algorithms implemented. The example executables can be built by enabling them in the CMake command by using a flag. For example:
+
+```
+mkdir build
+cd build
+cmake .. -DBUILD_LINEAR_REGRESSION=true
+make
+./LinearRegressionExample
+```
+
+Depending on which flags are used, the associated binaries will be output to the build directory. The current list of supported examples are (entire CMake and run command included below for convenience):
+
+```
+# Linear Regression
+cmake .. -DBUILD_LINEAR_REGRESSION=true # CMake command
+./LinearRegressionExample # Run command
+```
