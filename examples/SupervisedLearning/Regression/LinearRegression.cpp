@@ -48,7 +48,7 @@ int main() {
 
   // Predict the rent
   auto maybePredictionResult = lr.predictBatch(predictionValues);
-  std::cout << "Linear Regression Preictions:" << std::endl;
+  std::cout << "Linear Regression Predictions:" << std::endl;
   if (maybePredictionResult.has_value()) {
     Eigen::VectorXd predictionResults = maybePredictionResult.value();
     for (int i = 0; i < predictionResults.size(); i++) {
